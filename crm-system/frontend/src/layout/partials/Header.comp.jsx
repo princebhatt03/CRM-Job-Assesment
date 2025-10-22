@@ -4,7 +4,7 @@ import { Navbar, Nav } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logoutApi } from "../../api/userApi";
 import { loginFailure } from "../../features/login/loginSlice";
-import logo from "../../assets/img/logo.png";
+// import logo from "../../src"
 
 export const Header = () => {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ export const Header = () => {
       className="px-4"
     >
       <Navbar.Brand>
-        <img src={logo} alt="logo" width="50px" />
+        {/* <img src={logo} alt="logo" width="50px" /> */}
       </Navbar.Brand>
       <Navbar.Toggle
         aria-controls="basic-navbar-nav"

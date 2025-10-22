@@ -60,6 +60,6 @@ app.use((error, req, res, next) => {
 });
 
 // Start server
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`✅ API is ready on http://localhost:${port}`);
 });
