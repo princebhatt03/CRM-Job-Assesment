@@ -1,0 +1,16 @@
+.message-history{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    &:nth-child(even){
+        flex-direction: row-reverse;
+    }
+}
+
+.message{
+    padding: 1rem;
+    width: 80%;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
