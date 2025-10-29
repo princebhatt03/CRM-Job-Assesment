@@ -25,29 +25,30 @@ function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   useEffect(() => {
     const fetchSummary = async () => {
       // ... (fetchSummary logic remains the same)
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-            if (!token) {
-              setError('No authentication token found. Please log in.');
-              setLoading(false);
-              return;
-            }
-            const response = await fetch('http://localhost:5001/api/analytics/summary', {
-              headers: { 'x-auth-token': token },
-            });
-            if (!response.ok) throw new Error('Failed to fetch dashboard data');
-            const data = await response.json();
-            setSummary(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('No authentication token found. Please log in.');
+          setLoading(false);
+          return;
         }
+        const response = await fetch(`${API_BASE_URL}/api/analytics/summary`, {
+          headers: { 'x-auth-token': token },
+        });
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const data = await response.json();
+        setSummary(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchSummary();
   }, []);
@@ -107,17 +108,24 @@ function Dashboard() {
       {/* Bar Chart */}
       {summary.salesPipeline.length > 0 ? (
         <div className="chart-container">
-          <Bar options={chartOptions} data={pipelineData} />
+          <Bar
+            options={chartOptions}
+            data={pipelineData}
+          />
         </div>
       ) : (
-        <div className="chart-container" style={{ textAlign: 'center' }}>
+        <div
+          className="chart-container"
+          style={{ textAlign: 'center' }}>
           <h3>Sales Pipeline</h3>
           <p>No opportunity data available to display a chart.</p>
         </div>
       )}
 
       {/* Recent Activity List */}
-      <div className="recent-activity-card" style={{ marginTop: '30px' }}>
+      <div
+        className="recent-activity-card"
+        style={{ marginTop: '30px' }}>
         <h3>Recently Added Customers</h3>
         {summary.recentCustomers.length > 0 ? (
           <ul>

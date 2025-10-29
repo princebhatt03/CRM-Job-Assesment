@@ -15,7 +15,9 @@ function Register() {
   const [loading, setLoading] = useState(false);
 
   const { name, email, password } = formData;
-  const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const onChange = e =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   // --- This function now contains the submission logic ---
   const handleSubmit = async e => {
@@ -24,7 +26,7 @@ function Register() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5001/api/users/register', {
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,10 +44,9 @@ function Register() {
       // On successful registration, the backend sends back a token and user object.
       // We use our context's login function to set the user state globally.
       login(data.user, data.token);
-      
+
       // Redirect to the main dashboard after successful registration and login.
       navigate('/dashboard');
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -60,20 +61,46 @@ function Register() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">Name</label>
-            <input type="text" id="name" name="name" value={name} onChange={onChange} required />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={name}
+              onChange={onChange}
+              required
+            />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" value={email} onChange={onChange} required />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={onChange}
+              required
+            />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" value={password} onChange={onChange} required minLength="6" />
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={onChange}
+              required
+              minLength="6"
+            />
           </div>
-          
-          {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-          
-          <button type="submit" disabled={loading}>
+
+          {error && (
+            <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}>
             {loading ? 'Registering...' : 'Register'}
           </button>
         </form>

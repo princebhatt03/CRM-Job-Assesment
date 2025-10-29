@@ -12,7 +12,7 @@ function LeadForm({ onLeadAdded, onCancel }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -26,9 +26,11 @@ function LeadForm({ onLeadAdded, onCancel }) {
       setLoading(false);
       return;
     }
+    const API_BASE_URL =
+      import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
     try {
-      const response = await fetch('http://localhost:5001/api/leads', {
+      const response = await fetch(`${API_BASE_URL}/api/leads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ function LeadForm({ onLeadAdded, onCancel }) {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               required
             />
           </div>
@@ -83,7 +85,7 @@ function LeadForm({ onLeadAdded, onCancel }) {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -91,15 +93,14 @@ function LeadForm({ onLeadAdded, onCancel }) {
             <input
               type="text"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={e => setPhone(e.target.value)}
             />
           </div>
           <div className="form-group">
             <label>Status</label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
+              onChange={e => setStatus(e.target.value)}>
               <option value="New">New</option>
               <option value="Contacted">Contacted</option>
               <option value="Qualified">Qualified</option>
@@ -112,26 +113,34 @@ function LeadForm({ onLeadAdded, onCancel }) {
             <input
               type="text"
               value={source}
-              onChange={(e) => setSource(e.target.value)}
+              onChange={e => setSource(e.target.value)}
             />
           </div>
           <div className="form-group">
             <label>Notes</label>
             <textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={e => setNotes(e.target.value)}
               rows={4}
             />
           </div>
 
           {error && <p className="error-message">Error: {error}</p>}
-          {success && <p className="success-message">Lead added successfully!</p>}
+          {success && (
+            <p className="success-message">Lead added successfully!</p>
+          )}
 
           <div className="form-buttons">
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary">
               {loading ? 'Adding...' : 'Add Lead'}
             </button>
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn-secondary">
               Cancel
             </button>
           </div>

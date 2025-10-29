@@ -41,9 +41,10 @@ function LeadEditForm({ lead, onUpdateSuccess, onCancel }) {
       setLoading(false);
       return;
     }
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
     try {
-      const response = await fetch(`http://localhost:5001/api/leads/${lead._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/leads/${lead._id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -51,6 +52,7 @@ function LeadEditForm({ lead, onUpdateSuccess, onCancel }) {
         },
         body: JSON.stringify(updatedLead),
       });
+
 
       if (!response.ok) {
         const errorData = await response.json();

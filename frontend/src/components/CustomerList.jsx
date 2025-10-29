@@ -1,8 +1,8 @@
-import toast from "react-hot-toast";
-import React, { useState, useEffect } from "react";
-import CustomerForm from "./CustomerForm"; // Changed from LeadForm
-import CustomerEditForm from "./CustomerEditForm"; // Changed from LeadEditForm
-import ConfirmModal from "./ConfirmModal";
+import toast from 'react-hot-toast';
+import React, { useState, useEffect } from 'react';
+import CustomerForm from './CustomerForm'; // Changed from LeadForm
+import CustomerEditForm from './CustomerEditForm'; // Changed from LeadEditForm
+import ConfirmModal from './ConfirmModal';
 
 function CustomerList() {
   // State management mirrored for "customers"
@@ -12,7 +12,7 @@ function CustomerList() {
   const [showForm, setShowForm] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null); // Changed from editingLead
   const [refreshList, setRefreshList] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,27 +24,29 @@ function CustomerList() {
       const fetchCustomers = async () => {
         try {
           setLoading(true);
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem('token');
           if (!token) {
-            setError("No authentication token found. Please log in.");
+            setError('No authentication token found. Please log in.');
             setLoading(false);
             return;
           }
+          const API_BASE_URL =
+            import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
           // URL changed to fetch customers
-          const url = `http://localhost:5001/api/customers?search=${searchTerm}&page=${currentPage}&limit=10`;
+          const url = `${API_BASE_URL}/api/customers?search=${searchTerm}&page=${currentPage}&limit=10`;
 
           const response = await fetch(url, {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
-              "x-auth-token": token,
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
             },
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.msg || "Failed to fetch customers");
+            throw new Error(errorData.msg || 'Failed to fetch customers');
           }
 
           const data = await response.json();
@@ -72,9 +74,9 @@ function CustomerList() {
     setRefreshList(!refreshList);
   };
 
-  const handleCustomerUpdated = (updatedCustomer) => {
+  const handleCustomerUpdated = updatedCustomer => {
     setCustomers(
-      customers.map((customer) =>
+      customers.map(customer =>
         customer._id === updatedCustomer._id ? updatedCustomer : customer
       )
     );
@@ -86,7 +88,7 @@ function CustomerList() {
     setEditingCustomer(null);
   };
 
-  const openDeleteModal = (customerId) => {
+  const openDeleteModal = customerId => {
     setIdToDelete(customerId);
     setIsModalOpen(true);
   };
@@ -98,25 +100,25 @@ function CustomerList() {
 
   const confirmDelete = async () => {
     if (!idToDelete) return;
-    
+
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       // API path changed for customers
       const response = await fetch(
         `http://localhost:5001/api/customers/${idToDelete}`,
         {
-          method: "DELETE",
-          headers: { "x-auth-token": token },
+          method: 'DELETE',
+          headers: { 'x-auth-token': token },
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.msg || "Failed to delete customer");
+        throw new Error(errorData.msg || 'Failed to delete customer');
       }
 
-      toast.success("Customer deleted successfully!");
-      setRefreshList((prev) => !prev);
+      toast.success('Customer deleted successfully!');
+      setRefreshList(prev => !prev);
       setCurrentPage(1);
     } catch (err) {
       toast.error(`Error: ${err.message}`);
@@ -142,9 +144,11 @@ function CustomerList() {
         onConfirm={confirmDelete}
         onCancel={closeDeleteModal}
       />
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: '20px' }}>
         {!showForm && !editingCustomer && (
-          <button className="btn btn-success" onClick={() => setShowForm(true)}>
+          <button
+            className="btn btn-success"
+            onClick={() => setShowForm(true)}>
             Add New Customer
           </button>
         )}
@@ -166,17 +170,16 @@ function CustomerList() {
       <h3>Your Customers</h3>
       <div
         className="form-group"
-        style={{ maxWidth: "400px", marginBottom: "20px" }}
-      >
+        style={{ maxWidth: '400px', marginBottom: '20px' }}>
         <input
           type="text"
           placeholder="Search by name, email, or company..."
           value={searchTerm}
-          onChange={(e) => {
+          onChange={e => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          style={{ width: "100%", boxSizing: "border-box" }}
+          style={{ width: '100%', boxSizing: 'border-box' }}
         />
       </div>
 
@@ -188,7 +191,7 @@ function CustomerList() {
         <p>
           {searchTerm
             ? `No results for "${searchTerm}".`
-            : "No customers found."}
+            : 'No customers found.'}
         </p>
       ) : (
         <>
@@ -205,26 +208,24 @@ function CustomerList() {
               </tr>
             </thead>
             <tbody>
-              {customers.map((customer) => (
+              {customers.map(customer => (
                 <tr key={customer._id}>
                   <td>{customer.name}</td>
                   <td>{customer._id}</td>
-                  <td>{customer.email || "N/A"}</td>
-                  <td>{customer.phone || "N/A"}</td>
-                  <td>{customer.company || "N/A"}</td>
+                  <td>{customer.email || 'N/A'}</td>
+                  <td>{customer.phone || 'N/A'}</td>
+                  <td>{customer.company || 'N/A'}</td>
                   <td>{new Date(customer.createdAt).toLocaleDateString()}</td>
                   <td>
                     <button
                       className="btn btn-primary"
                       onClick={() => setEditingCustomer(customer)}
-                      style={{ marginRight: "8px" }}
-                    >
+                      style={{ marginRight: '8px' }}>
                       Edit
                     </button>
                     <button
                       className="btn btn-danger"
-                      onClick={() => openDeleteModal(customer._id)}
-                    >
+                      onClick={() => openDeleteModal(customer._id)}>
                       Delete
                     </button>
                   </td>
@@ -235,17 +236,15 @@ function CustomerList() {
 
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: "20px",
-            }}
-          >
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '20px',
+            }}>
             <button
               className="btn btn-secondary"
               onClick={handlePreviousPage}
-              disabled={currentPage <= 1}
-            >
+              disabled={currentPage <= 1}>
               Previous
             </button>
             <span>
@@ -254,8 +253,7 @@ function CustomerList() {
             <button
               className="btn btn-secondary"
               onClick={handleNextPage}
-              disabled={currentPage >= totalPages}
-            >
+              disabled={currentPage >= totalPages}>
               Next
             </button>
           </div>

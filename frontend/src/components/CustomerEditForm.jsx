@@ -22,7 +22,7 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
     }
   }, [customer]); // Dependency array: re-run if 'customer' prop changes
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -37,16 +37,22 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
       return;
     }
 
+    const API_BASE_URL =
+      import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
     try {
       // Make a PATCH request to the specific customer's ID
-      const response = await fetch(`http://localhost:5001/api/customers/${customer._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-        body: JSON.stringify(updatedCustomer),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/customers/${customer._id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+          },
+          body: JSON.stringify(updatedCustomer),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -78,7 +84,7 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               required
             />
           </div>
@@ -88,7 +94,7 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
           </div>
@@ -98,7 +104,7 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
             <input
               type="text"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={e => setPhone(e.target.value)}
             />
           </div>
 
@@ -107,7 +113,7 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
             <input
               type="text"
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={e => setAddress(e.target.value)}
             />
           </div>
 
@@ -116,18 +122,26 @@ function CustomerEditForm({ customer, onUpdateSuccess, onCancel }) {
             <input
               type="text"
               value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              onChange={e => setCompany(e.target.value)}
             />
           </div>
 
           {error && <p className="error-message">Error: {error}</p>}
-          {success && <p className="success-message">Customer updated successfully!</p>}
+          {success && (
+            <p className="success-message">Customer updated successfully!</p>
+          )}
 
           <div className="form-buttons">
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary">
               {loading ? 'Updating...' : 'Update Customer'}
             </button>
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn-secondary">
               Cancel
             </button>
           </div>

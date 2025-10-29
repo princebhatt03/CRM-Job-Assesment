@@ -27,3 +27,6 @@ just clone the project and run;
    docker compose up --build
 
    the server will start and visit the provided urls or open with docker desktop
+
+
+-Production Link: https://crm-job-assesment.onrender.com

@@ -11,7 +11,7 @@ function OpportunityEditForm({ opportunity, onUpdateSuccess, onCancel }) {
   const [stage, setStage] = useState('Qualification');
   const [expectedCloseDate, setExpectedCloseDate] = useState('');
   const [notes, setNotes] = useState('');
-  
+
   // State for the customer dropdown
   const [customers, setCustomers] = useState([]);
   const [loadingCustomers, setLoadingCustomers] = useState(true);
@@ -19,15 +19,16 @@ function OpportunityEditForm({ opportunity, onUpdateSuccess, onCancel }) {
   // General form states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const { token } = useContext(AuthContext);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   // Effect to fetch customers for the dropdown
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
         setLoadingCustomers(true);
-        const response = await fetch('http://localhost:5001/api/customers', {
+        const response = await fetch(`${API_BASE_URL}/api/customers`, {
           headers: { 'x-auth-token': token },
         });
         if (!response.ok) throw new Error('Could not load customers');
@@ -51,13 +52,17 @@ function OpportunityEditForm({ opportunity, onUpdateSuccess, onCancel }) {
       setValue(opportunity.value?.toString() || '');
       setStage(opportunity.stage || 'Qualification');
       // Format the date to YYYY-MM-DD for the date input
-      setExpectedCloseDate(opportunity.expectedCloseDate ? new Date(opportunity.expectedCloseDate).toISOString().split('T')[0] : '');
+      setExpectedCloseDate(
+        opportunity.expectedCloseDate
+          ? new Date(opportunity.expectedCloseDate).toISOString().split('T')[0]
+          : ''
+      );
       setNotes(opportunity.notes || '');
     }
   }, [opportunity]);
 
   // Handler to submit the updated data
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -72,14 +77,17 @@ function OpportunityEditForm({ opportunity, onUpdateSuccess, onCancel }) {
     };
 
     try {
-      const response = await fetch(`http://localhost:5001/api/opportunities/${opportunity._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token,
-        },
-        body: JSON.stringify(updatedOpportunity),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/opportunities/${opportunity._id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+          },
+          body: JSON.stringify(updatedOpportunity),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -106,32 +114,54 @@ function OpportunityEditForm({ opportunity, onUpdateSuccess, onCancel }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Title</label>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              required
+            />
           </div>
-          
+
           <div className="form-group">
             <label>Customer</label>
             <select
               value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
+              onChange={e => setCustomerId(e.target.value)}
               required
-              disabled={loadingCustomers}
-            >
-              <option value="" disabled>{loadingCustomers ? 'Loading customers...' : '-- Select a Customer --'}</option>
-              {customers.map((c) => (
-                <option key={c._id} value={c._id}>{c.name}</option>
+              disabled={loadingCustomers}>
+              <option
+                value=""
+                disabled>
+                {loadingCustomers
+                  ? 'Loading customers...'
+                  : '-- Select a Customer --'}
+              </option>
+              {customers.map(c => (
+                <option
+                  key={c._id}
+                  value={c._id}>
+                  {c.name}
+                </option>
               ))}
             </select>
           </div>
 
           <div className="form-group">
             <label>Value ($)</label>
-            <input type="number" value={value} onChange={(e) => setValue(e.target.value)} required min="0" />
+            <input
+              type="number"
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              required
+              min="0"
+            />
           </div>
 
           <div className="form-group">
             <label>Stage</label>
-            <select value={stage} onChange={(e) => setStage(e.target.value)}>
+            <select
+              value={stage}
+              onChange={e => setStage(e.target.value)}>
               <option value="Qualification">Qualification</option>
               <option value="Needs Analysis">Needs Analysis</option>
               <option value="Proposal">Proposal</option>
@@ -143,21 +173,35 @@ function OpportunityEditForm({ opportunity, onUpdateSuccess, onCancel }) {
 
           <div className="form-group">
             <label>Expected Close Date</label>
-            <input type="date" value={expectedCloseDate} onChange={(e) => setExpectedCloseDate(e.target.value)} />
+            <input
+              type="date"
+              value={expectedCloseDate}
+              onChange={e => setExpectedCloseDate(e.target.value)}
+            />
           </div>
 
           <div className="form-group">
             <label>Notes</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} />
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              rows={4}
+            />
           </div>
 
           {error && <p className="error-message">{error}</p>}
 
           <div className="form-buttons">
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary">
               {loading ? 'Updating...' : 'Update Opportunity'}
             </button>
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn-secondary">
               Cancel
             </button>
           </div>

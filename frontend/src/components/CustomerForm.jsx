@@ -11,7 +11,7 @@ function CustomerForm({ onCustomerAdded, onCancel }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     // --- Your existing handleSubmit logic remains unchanged ---
     e.preventDefault();
     setLoading(true);
@@ -24,19 +24,30 @@ function CustomerForm({ onCustomerAdded, onCancel }) {
       setLoading(false);
       return;
     }
+    const API_BASE_URL =
+      import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
     try {
-      const response = await fetch('http://localhost:5001/api/customers', {
+      const response = await fetch(`${API_BASE_URL}/api/customers`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
         body: JSON.stringify(newCustomer),
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.msg || 'Failed to add customer');
       }
       const addedCustomer = await response.json();
       setSuccess(true);
-      setName(''); setEmail(''); setPhone(''); setAddress(''); setCompany('');
+      setName('');
+      setEmail('');
+      setPhone('');
+      setAddress('');
+      setCompany('');
       if (onCustomerAdded) {
         onCustomerAdded(addedCustomer);
       }
@@ -55,33 +66,63 @@ function CustomerForm({ onCustomerAdded, onCancel }) {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Name</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label>Phone</label>
-            <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input
+              type="text"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+            />
           </div>
           <div className="form-group">
             <label>Address</label>
-            <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+            <input
+              type="text"
+              value={address}
+              onChange={e => setAddress(e.target.value)}
+            />
           </div>
           <div className="form-group">
             <label>Company</label>
-            <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} />
+            <input
+              type="text"
+              value={company}
+              onChange={e => setCompany(e.target.value)}
+            />
           </div>
 
           {error && <p className="error-message">Error: {error}</p>}
-          {success && <p className="success-message">Customer added successfully!</p>}
+          {success && (
+            <p className="success-message">Customer added successfully!</p>
+          )}
 
           <div className="form-buttons">
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary">
               {loading ? 'Adding...' : 'Add Customer'}
             </button>
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn-secondary">
               Cancel
             </button>
           </div>

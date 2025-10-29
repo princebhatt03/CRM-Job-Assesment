@@ -11,7 +11,7 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
   const [stage, setStage] = useState('Qualification');
   const [expectedCloseDate, setExpectedCloseDate] = useState('');
   const [notes, setNotes] = useState('');
-  
+
   // --- NEW: File state ---
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -22,16 +22,20 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
   // General form states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const { token } = useContext(AuthContext);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   // Fetch customers for the dropdown
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/customers', {
-          headers: { 'x-auth-token': token },
+        const response = await fetch(`${API_BASE_URL}/api/customers`, {
+          headers: {
+            'x-auth-token': token,
+          },
         });
+
         if (!response.ok) throw new Error('Could not load customers');
         const data = await response.json();
         setCustomers(data.customers || []);
@@ -45,14 +49,14 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
   }, [token]);
 
   // --- NEW: Handler for file input change ---
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     setSelectedFile(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!customerId) {
-      setError("Please select a customer.");
+      setError('Please select a customer.');
       return;
     }
     setLoading(true);
@@ -70,7 +74,7 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
 
     try {
       // First, create the opportunity record
-      const oppResponse = await fetch('http://localhost:5001/api/opportunities', {
+      const oppResponse = await fetch(`${API_BASE_URL}/api/opportunities`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +96,7 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
         formData.append('relatedTo', savedOpportunity._id);
         formData.append('relatedModel', 'Opportunity');
 
-        const fileResponse = await fetch('http://localhost:5001/api/files/upload', {
+        const fileResponse = await fetch(`${API_BASE_URL}/api/files/upload`, {
           method: 'POST',
           headers: { 'x-auth-token': token },
           body: formData,
@@ -102,8 +106,8 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
           toast.error('Opportunity created, but file upload failed.');
         }
       }
-      
-      toast.success("Opportunity added successfully!");
+
+      toast.success('Opportunity added successfully!');
       if (onOpportunityAdded) {
         onOpportunityAdded(); // Refresh the list
       }
@@ -123,18 +127,39 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
           {/* Customer, Title, Stage, Value, Date, and Notes fields remain the same... */}
           <div className="form-group">
             <label>Customer</label>
-            <select value={customerId} onChange={(e) => setCustomerId(e.target.value)} required disabled={loadingCustomers}>
-              <option value="" disabled>{loadingCustomers ? 'Loading...' : '-- Select a Customer --'}</option>
-              {customers.map((c) => (<option key={c._id} value={c._id}>{c.name}</option>))}
+            <select
+              value={customerId}
+              onChange={e => setCustomerId(e.target.value)}
+              required
+              disabled={loadingCustomers}>
+              <option
+                value=""
+                disabled>
+                {loadingCustomers ? 'Loading...' : '-- Select a Customer --'}
+              </option>
+              {customers.map(c => (
+                <option
+                  key={c._id}
+                  value={c._id}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
             <label>Title</label>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label>Stage</label>
-            <select value={stage} onChange={(e) => setStage(e.target.value)}>
+            <select
+              value={stage}
+              onChange={e => setStage(e.target.value)}>
               <option value="Qualification">Qualification</option>
               <option value="Needs Analysis">Needs Analysis</option>
               <option value="Proposal">Proposal</option>
@@ -145,30 +170,54 @@ function OpportunityForm({ onOpportunityAdded, onCancel }) {
           </div>
           <div className="form-group">
             <label>Value ($)</label>
-            <input type="number" value={value} onChange={(e) => setValue(e.target.value)} required min="0" />
+            <input
+              type="number"
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              required
+              min="0"
+            />
           </div>
           <div className="form-group">
             <label>Expected Close Date</label>
-            <input type="date" value={expectedCloseDate} onChange={(e) => setExpectedCloseDate(e.target.value)} />
+            <input
+              type="date"
+              value={expectedCloseDate}
+              onChange={e => setExpectedCloseDate(e.target.value)}
+            />
           </div>
           <div className="form-group">
             <label>Notes</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              rows={3}
+            />
           </div>
 
           {/* --- NEW: FILE INPUT FIELD --- */}
           <div className="form-group">
             <label htmlFor="file-upload">Attach File (Optional)</label>
-            <input id="file-upload" type="file" onChange={handleFileChange} />
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleFileChange}
+            />
           </div>
 
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          
+
           <div className="form-buttons">
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary">
               {loading ? 'Adding...' : 'Add Opportunity'}
             </button>
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn-secondary">
               Cancel
             </button>
           </div>

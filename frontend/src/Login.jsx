@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
-import './FormStyles.css'; 
+import './FormStyles.css';
 
 function Login() {
   const { login } = useContext(AuthContext);
@@ -12,6 +12,7 @@ function Login() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   const { email, password } = formData;
 
@@ -26,7 +27,7 @@ function Login() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth', {
+      const response = await fetch(`${API_BASE_URL}/api/auth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

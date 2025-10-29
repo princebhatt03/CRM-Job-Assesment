@@ -1,8 +1,8 @@
-import toast from "react-hot-toast";
-import React, { useState, useEffect } from "react";
-import LeadForm from "./LeadForm";
-import LeadEditForm from "./LeadEditForm";
-import ConfirmModal from "./ConfirmModal";
+import toast from 'react-hot-toast';
+import React, { useState, useEffect } from 'react';
+import LeadForm from './LeadForm';
+import LeadEditForm from './LeadEditForm';
+import ConfirmModal from './ConfirmModal';
 
 function LeadList() {
   const [leads, setLeads] = useState([]);
@@ -11,9 +11,10 @@ function LeadList() {
   const [showForm, setShowForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [refreshList, setRefreshList] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   // New state for pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,26 +25,26 @@ function LeadList() {
       const fetchLeads = async () => {
         try {
           setLoading(true);
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem('token');
           if (!token) {
-            setError("No authentication token found. Please log in.");
+            setError('No authentication token found. Please log in.');
             setLoading(false);
             return;
           }
 
-          const url = `http://localhost:5001/api/leads?search=${searchTerm}&page=${currentPage}&limit=10`;
+          const url = `${API_BASE_URL}/api/leads?search=${searchTerm}&page=${currentPage}&limit=10`;
 
           const response = await fetch(url, {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
-              "x-auth-token": token,
+              'Content-Type': 'application/json',
+              'x-auth-token': token,
             },
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.msg || "Failed to fetch leads");
+            throw new Error(errorData.msg || 'Failed to fetch leads');
           }
 
           const data = await response.json();
@@ -69,9 +70,9 @@ function LeadList() {
     setRefreshList(!refreshList);
   };
 
-  const handleLeadUpdated = (updatedLead) => {
+  const handleLeadUpdated = updatedLead => {
     setLeads(
-      leads.map((lead) => (lead._id === updatedLead._id ? updatedLead : lead))
+      leads.map(lead => (lead._id === updatedLead._id ? updatedLead : lead))
     );
     setEditingLead(null);
   };
@@ -81,7 +82,7 @@ function LeadList() {
     setEditingLead(null);
   };
 
-  const openDeleteModal = (leadId) => {
+  const openDeleteModal = leadId => {
     setIdToDelete(leadId);
     setIsModalOpen(true);
   };
@@ -95,23 +96,22 @@ function LeadList() {
     if (!idToDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       // --- Note the change to the API path ---
-      const response = await fetch(
-        `http://localhost:5001/api/leads/${idToDelete}`,
-        {
-          method: "DELETE",
-          headers: { "x-auth-token": token },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/leads/${idToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'x-auth-token': token,
+        },
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.msg || "Failed to delete lead");
+        throw new Error(errorData.msg || 'Failed to delete lead');
       }
 
-      toast.success("Lead deleted successfully!");
-      setRefreshList((prev) => !prev);
+      toast.success('Lead deleted successfully!');
+      setRefreshList(prev => !prev);
       setCurrentPage(1);
     } catch (err) {
       toast.error(`Error: ${err.message}`);
@@ -137,15 +137,20 @@ function LeadList() {
         onConfirm={confirmDelete}
         onCancel={closeDeleteModal}
       />
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: '20px' }}>
         {!showForm && !editingLead && (
-          <button className="btn btn-success" onClick={() => setShowForm(true)}>
+          <button
+            className="btn btn-success"
+            onClick={() => setShowForm(true)}>
             Add New Lead
           </button>
         )}
       </div>
       {showForm && !editingLead && (
-        <LeadForm onLeadAdded={handleLeadAdded} onCancel={handleCancelForm} />
+        <LeadForm
+          onLeadAdded={handleLeadAdded}
+          onCancel={handleCancelForm}
+        />
       )}
       {editingLead && (
         <LeadEditForm
@@ -160,17 +165,16 @@ function LeadList() {
       {/* Search Input */}
       <div
         className="form-group"
-        style={{ maxWidth: "400px", marginBottom: "20px" }}
-      >
+        style={{ maxWidth: '400px', marginBottom: '20px' }}>
         <input
           type="text"
           placeholder="Search by name, email, or source..."
           value={searchTerm}
-          onChange={(e) => {
+          onChange={e => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          style={{ width: "100%", boxSizing: "border-box" }}
+          style={{ width: '100%', boxSizing: 'border-box' }}
         />
       </div>
 
@@ -181,7 +185,7 @@ function LeadList() {
         <p className="error-message">{error}</p>
       ) : leads.length === 0 ? (
         <p>
-          {searchTerm ? `No results for "${searchTerm}".` : "No leads found."}
+          {searchTerm ? `No results for "${searchTerm}".` : 'No leads found.'}
         </p>
       ) : (
         <>
@@ -198,26 +202,24 @@ function LeadList() {
               </tr>
             </thead>
             <tbody>
-              {leads.map((lead) => (
+              {leads.map(lead => (
                 <tr key={lead._id}>
                   <td>{lead.name}</td>
-                  <td>{lead.email || "N/A"}</td>
-                  <td>{lead.phone || "N/A"}</td>
+                  <td>{lead.email || 'N/A'}</td>
+                  <td>{lead.phone || 'N/A'}</td>
                   <td>{lead.status}</td>
-                  <td>{lead.source || "N/A"}</td>
+                  <td>{lead.source || 'N/A'}</td>
                   <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
                   <td>
                     <button
                       className="btn btn-primary"
                       onClick={() => setEditingLead(lead)}
-                      style={{ marginRight: "8px" }}
-                    >
+                      style={{ marginRight: '8px' }}>
                       Edit
                     </button>
                     <button
                       className="btn btn-danger"
-                      onClick={() => openDeleteModal(lead._id)}
-                    >
+                      onClick={() => openDeleteModal(lead._id)}>
                       Delete
                     </button>
                   </td>
@@ -229,17 +231,15 @@ function LeadList() {
           {/* Pagination Controls */}
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: "20px",
-            }}
-          >
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '20px',
+            }}>
             <button
               className="btn btn-secondary"
               onClick={handlePreviousPage}
-              disabled={currentPage <= 1}
-            >
+              disabled={currentPage <= 1}>
               Previous
             </button>
             <span>
@@ -248,8 +248,7 @@ function LeadList() {
             <button
               className="btn btn-secondary"
               onClick={handleNextPage}
-              disabled={currentPage >= totalPages}
-            >
+              disabled={currentPage >= totalPages}>
               Next
             </button>
           </div>
