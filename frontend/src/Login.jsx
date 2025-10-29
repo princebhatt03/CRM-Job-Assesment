@@ -1,26 +1,26 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
-import './FormStyles.css'; // Using our shared styles
+import './FormStyles.css'; 
 
 function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: 'admin@gmail.com', // Pre-filled for convenience
-    password: 'password'      // Pre-filled for convenience
+    password: 'password', // Pre-filled for convenience
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const { email, password } = formData;
 
-  const onChange = (e) => {
+  const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // --- This function now contains the correct submission logic ---
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -37,7 +37,9 @@ function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.msg || 'Login failed. Please check your credentials.');
+        throw new Error(
+          data.msg || 'Login failed. Please check your credentials.'
+        );
       }
 
       // On successful login, update the global state via context
@@ -45,7 +47,6 @@ function Login() {
 
       // Redirect to the dashboard
       navigate('/dashboard');
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -81,10 +82,22 @@ function Login() {
             />
           </div>
 
-          {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '1rem' }}>{error}</p>}
+          {error && (
+            <p
+              style={{
+                color: 'red',
+                textAlign: 'center',
+                marginBottom: '1rem',
+              }}>
+              {error}
+            </p>
+          )}
 
           <div className="form-buttons">
-            <button type="submit" className="btn-primary" disabled={loading}>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </div>
