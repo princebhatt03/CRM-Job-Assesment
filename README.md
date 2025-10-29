@@ -58,6 +58,27 @@ A full-stack Customer Relationship Management (CRM) application designed to mana
 
 The application should now be running at `http://localhost:5173`.
 
+4.  **Run the Entire Application Using Docker (Recommended)**
+
+This project is fully Dockerized. You can run both backend and frontend with a single command.
+```
+### Steps:
+1. Make sure **Docker Desktop** is installed and running.
+2. In the project root folder (where `docker-compose.yml` is located), run:
+
+   docker compose up --build
+
+3. Wait for the build to complete. Then open:
+   - Frontend → http://localhost:3000
+   - Backend → http://localhost:5001
+
+4. To stop the containers:
+   docker compose down
+```
+---
+
+✅ That’s it! The application should now be up and running.
+
 ## Project Structure
 ```
 /mern-crm-app
