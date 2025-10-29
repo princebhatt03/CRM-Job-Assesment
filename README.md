@@ -1,207 +1,80 @@
-# Full-Stack CRM Web Application
+# MERN Stack CRM Application
 
-## Table of Contents
-- [Project Overview](#project-overview)
-- [Tech Stack](#tech-stack)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Database Design](#database-design)
-- [API Endpoints](#api-endpoints)
-- [Frontend Features](#frontend-features)
-- [Authentication & Security](#authentication--security)
-- [Email Functionality](#email-functionality)
-- [Testing](#testing)
-- [Docker Setup & Deployment](#docker-setup--deployment)
-- [Environment Variables](#environment-variables)
-- [Default Credentials](#default-credentials)
-- [Screen Recording](#screen-recording)
-- [Notes & Assumptions](#notes--assumptions)
+A full-stack Customer Relationship Management (CRM) application designed to manage customers, leads, and sales opportunities. Built from the ground up using the MERN stack (MongoDB, Express.js, React, Node.js).
 
----
+## Live Demo
+*(Live link will be added in some time, for now you can check out these screenshots)*
+<img width="1467" height="712" alt="Image" src="https://github.com/user-attachments/assets/62854848-c0f6-4bff-a8e6-0276281ad774" />
+<img width="1461" height="702" alt="Image" src="https://github.com/user-attachments/assets/7c4b4c07-192c-4197-b5a3-46ae450a433b" />
+<img width="1464" height="698" alt="Image" src="https://github.com/user-attachments/assets/f8273464-b623-4447-8c56-549f6f6f0e5d" />
+<img width="1459" height="696" alt="Image" src="https://github.com/user-attachments/assets/daf7c156-b3b4-4b98-b55b-e71df5ceac97" />
+<img width="1461" height="707" alt="Image" src="https://github.com/user-attachments/assets/f7b6815e-c8e8-41d4-99d1-779a649c2ec1" />
 
-## Project Overview
-This project is a **multi-organization CRM web application** that allows admins to manage customers and organizations efficiently. It also exposes authenticated APIs for external integrations. The app is fully dockerized and ready for deployment.
-
----
-
-## Tech Stack
-- **Backend:** ExpressJS (Node.js)  
-- **Frontend:** ReactJS  
-- **Database:** PostgreSQL  
-- **Containerization:** Docker & Docker Compose  
-- **Authentication:** JWT (Admins/Super-admins)  
-- **Email Service:** SMTP / Mock email service (console log)  
-
----
 
 ## Features
+- **User Authentication:** Secure user registration and login with JWT (JSON Web Tokens).
+- **Customer Management:** Full CRUD (Create, Read, Update, Delete) functionality for customer records.
+- **Sales Pipeline:** Manage sales opportunities through distinct stages (Qualification, Proposal, Negotiation, Closed Won/Lost).
+- **File Attachments:** Upload and attach important documents (contracts, proposals) to opportunities.
+- **Activity Logging:** Automatic, time-stamped audit trail for all major actions on a record.
+- **Search and Pagination:** Efficiently search and navigate through large sets of data.
 
-### Multi-Organization Support
-- Super-admin can create, edit, delete organizations and admin users.
-- Org-admins can manage customers only within their organization.
+## Tech Stack
+- **Frontend:** React, React Router, Context API
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB with Mongoose
+- **Authentication:** JSON Web Tokens (JWT) & bcrypt
+- **File Handling:** Multer
 
-### CRUD Operations
-- Full CRUD for **Customers**, **Admins**, and **Organizations**.
-- Accessible via **frontend UI** and **backend REST API**.
+## Getting Started
 
-### Authentication & Authorization
-- Admin login/logout with JWT-based authentication.
-- Role-based access control:
-  - **Super-admin:** Full access.
-  - **Org-admin:** Scoped to own organization.
-  - **Unauthenticated users:** No access.
+### Prerequisites
+- Node.js (v18.x or later)
+- npm
+- MongoDB (local instance or a cloud service like MongoDB Atlas)
 
-### External API Integration
-- Authenticated API endpoints for CRUD operations on customers.
-- API Key management for external integrations.
-- Supports Bearer token and X-API-Key authentication.
+### Installation & Setup
 
-### Email Notifications
-- Emails triggered for key events:
-  - Customer registration: greeting email + admin notification.
-  - Device verification.
-- Email templates stored in `/templates`.
+1.  **Clone the repository:**
+    ```
+    git clone https://github.com/sanjayrawatt/mern-crm-app.git
+    cd mern-crm-app
+    ```
 
----
+2.  **Setup Backend:**
+    - Navigate to the backend folder: `cd backend`
+    - Install dependencies: `npm install`
+    - Create a `.env` file and add the following variables:
+      ```
+      MONGO_URI=your_mongodb_connection_string
+      JWT_SECRET=your_jwt_secret_key
+      ```
+    - Start the backend server: `npm start`
 
-## Architecture
-Frontend (ReactJS) <--> Backend (ExpressJS) <--> PostgreSQL
-| |
-+------ Dockerized (Docker Compose) ------+
+3.  **Setup Frontend:**
+    - In a new terminal, navigate to the frontend folder: `cd frontend`
+    - Install dependencies: `npm install`
+    - Start the React development server: `npm run dev`
 
----
+The application should now be running at `http://localhost:5173`.
 
-## Database Design
-
-### admins
-| Field          | Type   | Description |
-|----------------|--------|-------------|
-| id             | PK     | Unique ID |
-| name           | String | Admin name |
-| email          | String | Login email |
-| password_hash  | String | Encrypted password |
-| org_id         | FK     | Organization ID |
-| role           | Enum   | superadmin/admin |
-
-### customers
-| Field      | Type   | Description |
-|------------|--------|-------------|
-| id         | PK     | Unique customer ID |
-| uid        | String | Unique identifier |
-| device_id  | String | Customer device ID |
-| org_id     | FK     | Organization ID |
-| name       | String | Customer name |
-| email      | String | Customer email (optional) |
-
-### orgs
-| Field      | Type      | Description |
-|------------|-----------|-------------|
-| id         | PK        | Organization ID |
-| name       | String    | Organization name |
-| created_at | Timestamp | Creation date |
-| updated_at | Timestamp | Last update |
-
----
-
-## API Endpoints
-
-### Authentication
-- `POST /api/v1/auth/login` – Login (Admin/Super-admin)
-- `POST /api/v1/auth/refresh` – Refresh JWT
-- `POST /api/v1/auth/logout` – Logout
-
-### Organizations
-- `POST /api/v1/orgs` – Create org
-- `GET /api/v1/orgs` – List orgs
-- `GET /api/v1/orgs/{orgId}` – Get org details
-- `PATCH /api/v1/orgs/{orgId}` – Update org
-- `DELETE /api/v1/orgs/{orgId}` – Delete org
-
-### Admin Users
-- `POST /api/v1/orgs/{orgId}/admins`
-- `GET /api/v1/orgs/{orgId}/admins`
-- `PATCH /api/v1/orgs/{orgId}/admins/{adminId}`
-- `DELETE /api/v1/orgs/{orgId}/admins/{adminId}`
-
-### Customers
-- `POST /api/v1/orgs/{orgId}/customers`
-- `GET /api/v1/orgs/{orgId}/customers`
-- `GET /api/v1/orgs/{orgId}/customers/{customerId}`
-- `PATCH /api/v1/orgs/{orgId}/customers/{customerId}`
-- `DELETE /api/v1/orgs/{orgId}/customers/{customerId}`
-
-### Device Verification & Events
-- `POST /api/v1/orgs/{orgId}/customers/{customerId}/devices/verify`
-- `POST /api/v1/orgs/{orgId}/events/customer-registered`
-
-### API Key Management
-- `POST /api/v1/orgs/{orgId}/api-keys`
-- `GET /api/v1/orgs/{orgId}/api-keys`
-- `DELETE /api/v1/orgs/{orgId}/api-keys/{apiKeyId}`
-
----
-
-## Frontend Features
-- Admin login/logout
-- Dashboard to list customers
-- Forms to add, edit, delete customers
-- Search bar and optional pagination
-- Proper form validation & error handling
-
----
-
-## Authentication & Security
-- Passwords hashed using **bcrypt**
-- JWT expiry: 15–60 minutes with refresh route
-- API keys are long, random, and hashed at rest
-- Org scoping enforced on all queries
-- Protected routes return standard error format:
-```json
-{ "error": { "code": "RESOURCE_NOT_FOUND", "message": "..." } }
-Email Functionality
+## Project Structure
 ```
-Greeting email on new customer registration
-
-Admin notification on customer registration
-
-Device verification email
-
-Templates located in /templates (plain text or HTML)
-
-Testing
-
-Unit and integration tests for CRUD operations
-
-Authentication tests for protected routes
-
-Recommended frameworks: Jest (Node.js), Supertest (API)
-
-Docker Setup & Deployment
+/mern-crm-app
+├── /backend
+│   ├── /models       # Mongoose schemas
+│   ├── /routes       # API routes
+│   ├── /middleware   # Auth middleware
+│   ├── /services     # Helper services (e.g., activity logger)
+│   └── server.js     # Express server entry point
+└── /frontend
+    ├── /src
+    │   ├── /components # React components
+    │   ├── /context    # AuthContext
+    │   ├── /pages      # Main page components
+    │   └── App.jsx     # Main app layout and routing
 ```
-# Build & run application
-docker-compose up --build
-```
-Backend, frontend, and PostgreSQL fully dockerized
 
-App auto-creates tables and a default super-admin account
-
-Environment Variables
-```env
-Example .env.example:
-
-PORT=5000
-DB_HOST=db
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=crm
-JWT_SECRET=supersecretkey
-JWT_EXPIRY=3600
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_email_password
-```
 ### 👨‍💻 Developer
 Prince Bhatt
 
