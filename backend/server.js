@@ -41,7 +41,7 @@ app.use('/api/files', require('./routes/fileRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/activities', require('./routes/activityRoutes'));
 
-// --- Start the Server ---
+// --- Server ---
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, '0.0.0.0', () =>
   console.log(`Server running on port ${PORT}`)
